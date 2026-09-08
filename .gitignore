@@ -1,0 +1,6 @@
+# Build artifacts
+plugin.wasm
+*.ndp
+
+# Local helper binaries
+/cmd/session-key/session-key

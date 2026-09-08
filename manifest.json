@@ -1,0 +1,223 @@
+{
+  "$schema": "https://raw.githubusercontent.com/navidrome/navidrome/refs/heads/master/plugins/manifest-schema.json",
+  "name": "Last.fm Scrobble Exclusion",
+  "author": "mc",
+  "version": "1.0.0",
+  "description": "Scrobbles to Last.fm like the native integration, but silently skips tracks whose Navidrome track ID is on a configurable blacklist.",
+  "website": "https://github.com/mc/navidrome-lastfm-exclusion",
+  "permissions": {
+    "users": {
+      "reason": "To scrobble on behalf of the users assigned to this plugin"
+    },
+    "http": {
+      "reason": "To submit now-playing updates and scrobbles to the Last.fm API",
+      "requiredHosts": [
+        "ws.audioscrobbler.com"
+      ]
+    }
+  },
+  "config": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "apikey": {
+          "type": "string",
+          "title": "Last.fm API Key",
+          "description": "Your Last.fm application API key. Create one at https://www.last.fm/api/account/create",
+          "minLength": 1
+        },
+        "apisecret": {
+          "type": "string",
+          "title": "Last.fm Shared Secret",
+          "description": "The shared secret for your Last.fm application (keep this secret!).",
+          "minLength": 1
+        },
+        "users": {
+          "type": "array",
+          "title": "User Session Keys",
+          "description": "One entry per Navidrome user that should scrobble. Generate each session key once with `make session-key`. WARNING: session keys are sensitive.",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+                "title": "Navidrome Username",
+                "minLength": 1
+              },
+              "sessionkey": {
+                "type": "string",
+                "title": "Last.fm Session Key",
+                "description": "The user's Last.fm session key (from `make session-key`).",
+                "minLength": 1
+              }
+            },
+            "required": ["username", "sessionkey"]
+          }
+        },
+        "blacklist": {
+          "type": "array",
+          "title": "Blacklisted Track IDs",
+          "description": "Exclude specific tracks by their Navidrome track ID.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "trackid": {
+                "type": "string",
+                "title": "Navidrome Track ID",
+                "description": "The internal track ID (e.g. from the track's share/API URL).",
+                "minLength": 1
+              },
+              "note": {
+                "type": "string",
+                "title": "Note (optional)",
+                "description": "A label to remind you what this ID is; not used for matching."
+              }
+            },
+            "required": ["trackid"]
+          }
+        },
+        "artistblacklist": {
+          "type": "array",
+          "title": "Blacklisted Artists",
+          "description": "Exclude any track that features this artist, even alongside other artists. Matched by exact artist name (case-insensitive).",
+          "items": {
+            "type": "object",
+            "properties": {
+              "artist": {
+                "type": "string",
+                "title": "Artist Name",
+                "minLength": 1
+              },
+              "note": {
+                "type": "string",
+                "title": "Note (optional)"
+              }
+            },
+            "required": ["artist"]
+          }
+        },
+        "titleblacklist": {
+          "type": "array",
+          "title": "Blacklisted Title Words",
+          "description": "Exclude any track whose title contains this word or phrase (case-insensitive substring match). Useful for e.g. 'interlude', 'skit', 'intro'.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "title": "Word or Phrase",
+                "minLength": 1
+              },
+              "note": {
+                "type": "string",
+                "title": "Note (optional)"
+              }
+            },
+            "required": ["text"]
+          }
+        }
+      },
+      "required": ["apikey", "apisecret", "users"]
+    },
+    "uiSchema": {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/apikey"
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/apisecret",
+          "options": {
+            "format": "password"
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/users",
+          "options": {
+            "elementLabelProp": "username",
+            "detail": {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/username"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/sessionkey",
+                  "options": {
+                    "format": "password"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/blacklist",
+          "options": {
+            "elementLabelProp": "trackid",
+            "detail": {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/trackid"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/note"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/artistblacklist",
+          "options": {
+            "elementLabelProp": "artist",
+            "detail": {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/artist"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/note"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/titleblacklist",
+          "options": {
+            "elementLabelProp": "text",
+            "detail": {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/text"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/note"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
