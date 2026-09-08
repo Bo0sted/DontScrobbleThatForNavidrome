@@ -4,7 +4,7 @@
   "author": "mc",
   "version": "1.0.0",
   "description": "Scrobbles to Last.fm like the native integration, but silently skips tracks whose Navidrome track ID is on a configurable blacklist.",
-  "website": "https://github.com/mc/navidrome-lastfm-exclusion",
+  "website": "https://github.com/Bo0sted/DontScrobbleThatForNavidrome",
   "permissions": {
     "users": {
       "reason": "To scrobble on behalf of the users assigned to this plugin"
